@@ -1,0 +1,10 @@
+- hosts: localhost
+  gather_facts: false
+  vars:
+    sleeptime: 5
+  tasks:
+    - shell: "sleep before"
+    - shell: "sleep {{sleeptime}}"
+    - shell: "echo after"
+    - debug:
+        msg: "OK"

@@ -42,3 +42,14 @@
       tags: ipv6
       run_once: True
       when: test_env == 'osp'
+
+
+    - name: clean bigip partitions.
+      shell: "ansible-playbook -i {{inventory_file}}  ../playbooks/clean-bigip-partitions.yml "
+      delegate_to: localhost
+      run_once: True
+      tags: ['basic','tls','tcphttps','persist','l7x','customized','ftp','udp','ipv6']
+      
+
+   
+      
