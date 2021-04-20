@@ -118,7 +118,28 @@ class LBaasV2Helper:
             traceback.print_exc()
             raise e
 
-
+    def get_project_id(self, project_name):
+        project_url = "http://%s:5000/v3/projects" % self.os_host
+        payload = {}
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': self.authed_token
+        }
+        payload_data = json.dumps(payload)
+        try:
+            response = requests.request("GET", project_url, headers=headers, data = payload_data)
+            if int(response.status_code / 200) == 1:
+                # print(json.dumps(json.loads(response.text.encode('utf8')), indent=2))
+                for item in response.json()["projects"]:
+                    if item["name"] == project_name:
+                        return item["id"]
+                return None
+            else:
+                print("failed to get project id: %d, %s" % (response.status_code, response.text.encode('utf-8')))
+                sys.exit(1)
+        except Exception as e:
+            traceback.print_exc()
+            raise e
     def get_subnet_id(self, subnet_name):
         subnet_url = "http://%s:9696/v2.0/subnets?fields=id&name=%s" % (self.os_host, subnet_name)
 
