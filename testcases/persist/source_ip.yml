@@ -30,17 +30,28 @@
   with_items: "{{ bigip_infos.results }}"
   loop_control:
     label: "source_addr_{{ environment_prefix }}_{{ listener_id }}"
-
+# change to uri
 - name: "now, the response is unique from one of {{ groups['pool1'] | join(' ') }}"
-  shell: |
-    curl http://{{ vip_address.stdout }}:{{ test_listener_tcpport }}
-  args:
-    warn: no
+  uri:
+    url: http://{{ vip_address.stdout }}:{{ test_listener_tcpport }}
   loop_control:
     label: "{{ item }}: http://{{ vip_address.stdout }}:{{ test_listener_tcpport }} -H 'Cookie: JSESSIONID={{ jsession_id }}'"
-  register: curl_results
   with_items: "{{ range(0, 10, 1) | list }}"
   delegate_to: "{{ groups['clients_ipv4'][0] }}"
+  register: curl_resultsAll
+- set_fact:
+    curl_results: "{{curl_resultsAll.set_cookie}}"
+#
+# - name: "now, the response is unique from one of {{ groups['pool1'] | join(' ') }}"
+#   shell: |
+#     curl http://{{ vip_address.stdout }}:{{ test_listener_tcpport }}
+#   args:
+#     warn: no
+#   loop_control:
+#     label: "{{ item }}: http://{{ vip_address.stdout }}:{{ test_listener_tcpport }} -H 'Cookie: JSESSIONID={{ jsession_id }}'"
+#   register: curl_results
+#   with_items: "{{ range(0, 10, 1) | list }}"
+#   delegate_to: "{{ groups['clients_ipv4'][0] }}"
 
 - set_fact:
     unique_responses: "{{ curl_results.results | map(attribute='stdout') | unique | list }}"

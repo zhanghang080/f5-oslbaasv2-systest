@@ -18,6 +18,8 @@ service_providers = CORE,DMZ
 [bigips]
 10.250.11.195
 10.250.11.196
+#10.250.11.193
+#10.250.11.194
 
 [bigips:vars]
 admin_password = P@ssw0rd123

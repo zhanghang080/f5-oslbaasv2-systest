@@ -52,4 +52,14 @@
   with_items: "{{groups['clients_ipv4']}}"
   when: test_env == "osp"
 
+#- name: "Check mtls {{ test_listener_protocol }} {{ test_listener_tcpport }} is reachable"
+#  uri:
+#    url: http://{{ vip_address.stdout }}:{{ test_listener_tcpport }}
+#    validate_certs: False
+#    client_cert: /tmp/kps/client.crt
+#    client_key: /tmp/kps/client.key
+#  delegate_to: "{{ item }}"
+#  with_items: "{{groups['clients_ipv4']}}"
+#  when: test_env == 'osp'
+
 - import_tasks: ../../playbooks/task-remove-resources.yml

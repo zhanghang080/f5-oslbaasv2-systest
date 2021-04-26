@@ -1,0 +1,20 @@
+- hosts: localhost
+  gather_facts: False
+  vars:
+    var1: 0
+  tasks:
+    - uri:
+        url: https://www.baidu.com
+        validate_certs: False
+        return_content: yes
+      register: res
+      with_items: "{{ range(0, 2, 1) | list }}"
+      when: var1 == 0
+
+    - shell: curl https://www.baidu.com
+      with_items: "{{ range(0, 5, 1) | list }}"
+      register: res1
+      when: var1 == 1
+
+    - debug:
+        msg: "{{res}}"

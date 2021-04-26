@@ -16,19 +16,31 @@
     jsession_id: "{{ groups['pool1'][0] | hash('sha1') }}"
 - debug: msg="{{ jsession_id }}"
 
+#change to uri
 - name: "now, the response is randomly from {{ groups['pool1'] | join(' ') }}"
-  shell: |
-    curl -I -v http://{{ vip_address.stdout }}:{{ test_listener_tcpport }} -H "Cookie: JSESSIONID={{ jsession_id }}" | grep "Set-Cookie: "
-  args:
-    warn: no
-  register: curl_results
+  uri:
+    url: http://{{ vip_address.stdout }}:{{ test_listener_tcpport }}
+    headers:
+      Cookie: "JSESSIONID={{ jsession_id }}"
   loop_control:
     label: "{{ item }}: http://{{ vip_address.stdout }}:{{ test_listener_tcpport }} -H 'Cookie: JSESSIONID={{ jsession_id }}'"
   with_items: "{{ range(0, 10, 1) | list }}"
   delegate_to: "{{ groups['clients_ipv4'][0] }}"
+  register: curl_results
+#
+# - name: "now, the response is randomly from {{ groups['pool1'] | join(' ') }}"
+#   shell: |
+#     curl -I -v http://{{ vip_address.stdout }}:{{ test_listener_tcpport }} -H "Cookie: JSESSIONID={{ jsession_id }}" | grep "Set-Cookie: "
+#   args:
+#     warn: no
+#   register: curl_results
+#   loop_control:
+#     label: "{{ item }}: http://{{ vip_address.stdout }}:{{ test_listener_tcpport }} -H 'Cookie: JSESSIONID={{ jsession_id }}'"
+#   with_items: "{{ range(0, 10, 1) | list }}"
+#   delegate_to: "{{ groups['clients_ipv4'][0] }}"
 
 - set_fact:
-    unique_responses: "{{ curl_results.results | map(attribute='stdout') | unique | list }}"
+    unique_responses: "{{ curl_results  | unique | list }}"
 - debug: msg="{{unique_responses}}"
 - assert:
     that: 

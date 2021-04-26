@@ -1,0 +1,13 @@
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - debug:
+        msg: "{{hostvars}}"
+    - shell: b64credential=`echo -n admin:P@ssword123 | base64` && echo $b64credential
+      register: sh1Res
+    - shell: full_path=~CORE_5fecf9bdd7b84e1eb9f08b14023400c6~ftp_profile_eb975bef-89d7-4266-abda-104f7657e8fc && echo $full_path
+      register: sh2Res
+    - debug: 
+        msg: "{{sh1Res}}"
+    - debug:
+        msg: "{{sh2Res}}"
