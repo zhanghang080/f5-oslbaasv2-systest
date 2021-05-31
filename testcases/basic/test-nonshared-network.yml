@@ -1,3 +1,12 @@
+- name: "get Dev tenant id"
+  shell: |
+    source {{ openrc }} && \
+    openstack project show $OS_PROJECT_NAME --format value --column id
+  register: shell_projectid
+
+- set_fact:
+    project_id: "{{ shell_projectid.stdout }}"
+
 - name: Create LB in test-net-a
   shell: |
     source {{ openrc }} && {{ item }}
